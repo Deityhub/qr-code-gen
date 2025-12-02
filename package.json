@@ -5,7 +5,7 @@
   "type": "module",
   "main": "./dist/cjs/index.js",
   "module": "./dist/esm/index.js",
-  "types": "./dist/index.d.ts",
+  "types": "./dist/types/index.d.ts",
   "scripts": {
     "clean": "rimraf dist",
     "build:esm": "tsc -p tsconfig.esm.json",
@@ -20,7 +20,7 @@
     ".": {
       "import": "./dist/esm/index.js",
       "require": "./dist/cjs/index.js",
-      "types": "./dist/index.d.ts"
+      "types": "./dist/types/index.d.ts"
     },
     "./umd": "./dist/umd/qr-code-gen.min.js"
   },
