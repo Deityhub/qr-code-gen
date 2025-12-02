@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code Generator Demo</title>
+    <style>
+        :root {
+            --surface: #ffffff;
+            --ink: #0f172a;
+            --muted: #4a5878;
+            --border: #d8e4ff;
+            --accent: #0e7bf7;
+            --accent-strong: #0d63c4;
+            --bg: radial-gradient(circle at 20% 20%, #f4f8ff 0%, #e7f3ff 35%, #f7fbff 70%);
+        }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: var(--bg);
+            color: var(--ink);
+            font-family: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 32px;
+        }
+        .shell {
+            width: min(1040px, 100%);
+            background: var(--surface);
+            border-radius: 18px;
+            border: 1px solid var(--border);
+            box-shadow: 0 20px 70px rgba(15, 23, 42, 0.08);
+            overflow: hidden;
+        }
+        .hero {
+            padding: 28px 30px;
+            background: linear-gradient(135deg, rgba(14, 123, 247, 0.1), rgba(14, 123, 247, 0.02));
+            border-bottom: 1px solid var(--border);
+        }
+        h1 {
+            margin: 0 0 6px;
+            font-size: 28px;
+            letter-spacing: -0.5px;
+        }
+        .lede {
+            margin: 0;
+            color: var(--muted);
+            max-width: 680px;
+            line-height: 1.5;
+        }
+        .content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 22px;
+            padding: 26px 30px 30px;
+        }
+        .panel {
+            padding: 20px;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+        }
+        .panel.grid {
+            height: 20rem;
+        }
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: var(--ink);
+        }
+        .hint {
+            font-size: 13px;
+            color: var(--muted);
+            margin-top: 2px;
+        }
+        input, select, button {
+            font: inherit;
+        }
+        input[type="text"],
+        input[type="number"],
+        select {
+            width: 100%;
+            padding: 8px 10px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: #f9fbff;
+            color: var(--ink);
+            transition: border 120ms ease, box-shadow 120ms ease, background 120ms ease;
+        }
+        input[type="text"]:focus,
+        input[type="number"]:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--accent);
+            background: #f4f8ff;
+            box-shadow: 0 0 0 3px rgba(14, 123, 247, 0.1);
+        }
+        .grid {
+            display: grid;
+            gap: 16px;
+        }
+        .grid.two {
+            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+        }
+        .grid.two .grid {
+            gap: 0px;
+        }
+        button.primary {
+            margin-top: 6px;
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            border: none;
+            background: linear-gradient(135deg, var(--accent), var(--accent-strong));
+            color: #fff;
+            font-weight: 700;
+            letter-spacing: 0.2px;
+            cursor: pointer;
+            box-shadow: 0 12px 35px rgba(14, 123, 247, 0.28);
+            transition: transform 120ms ease, box-shadow 120ms ease, filter 120ms ease;
+        }
+        button.primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 16px 40px rgba(14, 123, 247, 0.32);
+            filter: brightness(1.02);
+        }
+        button.primary:active {
+            transform: translateY(0);
+        }
+        .message {
+            margin-top: 12px;
+            padding: 12px 14px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            background: #f4f8ff;
+            color: var(--muted);
+        }
+        .message.success {
+            border-color: #c8e9d1;
+            background: #e9f7ee;
+            color: #1c6a3e;
+        }
+        .message.error {
+            border-color: #ffd6d6;
+            background: #fff2f2;
+            color: #b42329;
+        }
+        .preview-card {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            align-items: stretch;
+        }
+        .qr-frame {
+            border: 1px dashed var(--border);
+            border-radius: 14px;
+            background: #f7fbff;
+            min-height: 280px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .qr-output svg {
+            width: 100%;
+            height: auto;
+            max-width: 360px;
+        }
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #0f172a;
+            color: #fff;
+            padding: 6px 12px;
+            border-radius: 999px;
+            font-size: 12px;
+            letter-spacing: 0.2px;
+        }
+        .footer {
+            padding: 0 30px 26px;
+            color: var(--muted);
+            font-size: 14px;
+        }
+        @media (max-width: 720px) {
+            body { padding: 20px; }
+            h1 { font-size: 24px; }
+            .qr-output svg { max-width: 280px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="shell">
+        <div class="hero">
+            <div class="badge">
+                <span>QR code playground</span>
+            </div>
+            <h1>Generate a QR code instantly</h1>
+            <p class="lede">Type any text, adjust the error correction level, and see the updated QR code right away. Everything runs in the browser using the library in this repo.</p>
+        </div>
+
+        <div class="content">
+            <form id="qrForm" class="panel grid">
+                <div class="grid">
+                    <label for="data">Text to encode</label>
+                    <input type="text" id="data" name="data" value="https://example.com" autocomplete="off" placeholder="Enter URL, text, or payload">
+                    <p class="hint">Press Generate or hit Enter to refresh the preview.</p>
+                </div>
+
+                <div class="grid two">
+                    <div class="grid">
+                        <label for="ecl">Error correction</label>
+                        <select id="ecl" name="ecl">
+                            <option value="L">L — recovers ~7%</option>
+                            <option value="M" selected>M — recovers ~15%</option>
+                            <option value="Q">Q — recovers ~25%</option>
+                            <option value="H">H — recovers ~30%</option>
+                        </select>
+                    </div>
+                    <div class="grid">
+                        <label for="moduleSize">Module size (px)</label>
+                        <input type="number" id="moduleSize" name="moduleSize" value="8" min="2" max="16" step="1">
+                    </div>
+                </div>
+
+                <button class="primary" type="submit" id="generateBtn">Generate QR code</button>
+            </form>
+
+            <div class="panel preview-card" id="previewCard">
+                <div class="message" id="message">Ready when you are — enter some text and generate.</div>
+                <div class="qr-frame" id="qrContainer">
+                    <div class="qr-output" id="qrOutput"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            Tip: adjusting the error correction level (L/M/Q/H) changes how much of the QR code can be damaged while still remaining scannable.
+        </div>
+    </div>
+
+    <script src="../../dist/umd/qr-code-gen.min.js"></script>
+    <script>
+        (() => {
+            const { generateQRCode, renderToSVG, renderToString } = window.QRCodeGen;
+            const form = document.getElementById('qrForm');
+            const message = document.getElementById('message');
+            const qrOutput = document.getElementById('qrOutput');
+            const qrContainer = document.getElementById('qrContainer');
+
+            const getNumber = (id, fallback) => {
+                const value = parseInt(document.getElementById(id).value, 10);
+                return Number.isFinite(value) ? value : fallback;
+            };
+
+            const render = () => {
+                const data = document.getElementById('data').value.trim();
+                const ecl = document.getElementById('ecl').value;
+                const moduleSize = getNumber('moduleSize', 8);
+                const quietZone = Math.max(1, moduleSize); // Link module size directly to quiet zone
+
+                message.className = 'message';
+                message.textContent = 'Rendering...';
+
+                if (!data) {
+                    message.className = 'message error';
+                    message.textContent = 'Enter some text to generate a QR code.';
+                    qrOutput.innerHTML = '';
+                    return;
+                }
+
+                try {
+                    const matrix = generateQRCode({
+                        data,
+                        ecl,
+                        mode: 'Auto',
+                        quietZone,
+                    });
+                    
+                    const svg = renderToSVG(matrix, matrix.length * moduleSize);
+                    qrOutput.innerHTML = svg;
+                    qrContainer.style.display = 'flex';
+                    message.className = 'message success';
+                    message.textContent = 'Scan this with your camera to verify the payload.';
+                } catch (err) {
+                    message.className = 'message error';
+                    message.textContent = `Error: ${err.message ?? err}`;
+                    qrOutput.innerHTML = '';
+                }
+            };
+
+            form.addEventListener('submit', (event) => {
+                event.preventDefault();
+                render();
+            });
+
+            document.addEventListener('DOMContentLoaded', render);
+        })();
+    </script>
+</body>
+</html>
