@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
-## [1.0.1] - 2024-12-02
+## [1.0.1] - 2025-12-02
 
 ### Fixed
 
@@ -17,7 +17,7 @@ All notable changes to this project will be documented in this file.
 - Updated demo images to use GitHub raw URLs for better README rendering
 - Improved package metadata with author email and repository links
 
-## [0.1.0] - 2024-12-02
+## [0.1.0] - 2025-12-02
 
 ### Added
 
