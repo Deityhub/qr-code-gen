@@ -15,14 +15,28 @@ A robust, zero-dependency, highly configurable QR code generator for TypeScript 
 
 ## Installation
 
+### NPM
+
 ```bash
-npm install qr-code-gen
+npm install @deityhub/qr-code-gen
+# or
+yarn add @deityhub/qr-code-gen
 ```
+
+### CDN (Script Tag)
+
+You can also use the library directly in your browser via unpkg CDN:
+
+```html
+<script src="https://unpkg.com/@deityhub/qr-code-gen/dist/umd/qr-code-gen.min.js"></script>
+```
+
+The library will be available as `window.QRCodeGen`.
 
 ## Quick Start
 
 ```typescript
-import { generateQRCode, renderToSVG } from 'qr-code-gen';
+import { generateQRCode, renderToSVG } from '@deityhub/qr-code-gen';
 
 // Generate a QR code
 const matrix = generateQRCode({ data: 'Hello, World!' });
@@ -81,7 +95,7 @@ Renders a QR code matrix as a UTF-8 string using block characters (useful for co
 ### Basic Usage
 
 ```typescript
-import { generateQRCode, renderToSVG } from 'qr-code-gen';
+import { generateQRCode, renderToSVG } from '@deityhub/qr-code-gen';
 
 // Simple text QR code
 const matrix = generateQRCode({ data: 'https://example.com' });
@@ -91,7 +105,7 @@ const svg = renderToSVG(matrix, 300);
 ### Advanced Configuration
 
 ```typescript
-import { generateQRCode, renderToSVG } from 'qr-code-gen';
+import { generateQRCode, renderToSVG } from '@deityhub/qr-code-gen';
 
 // High error correction with custom sizing
 const matrix = generateQRCode({
@@ -107,7 +121,7 @@ const svg = renderToSVG(matrix, 400); // 400px SVG
 ### Console Output
 
 ```typescript
-import { generateQRCode, renderToString } from 'qr-code-gen';
+import { generateQRCode, renderToString } from '@deityhub/qr-code-gen';
 
 const matrix = generateQRCode({ data: 'Hello, World!' });
 console.log(renderToString(matrix));
@@ -116,7 +130,7 @@ console.log(renderToString(matrix));
 ### Different Encoding Modes
 
 ```typescript
-import { generateQRCode } from 'qr-code-gen';
+import { generateQRCode } from '@deityhub/qr-code-gen';
 
 // Numeric mode (most efficient for numbers)
 const numericQR = generateQRCode({
@@ -211,11 +225,11 @@ Open `src/example/demo.html` in your browser to try it out.
 
 ### Browser Demo
 
-![QR Code Generator Browser Demo](./demo-browser.png)
+![QR Code Generator Browser Demo](https://raw.githubusercontent.com/Deityhub/qr-code-gen/refs/heads/main/demo-browser.png)
 
 ### Console Output
 
-![QR Code Generator Console Output](./demo-console.png)
+![QR Code Generator Console Output](https://raw.githubusercontent.com/Deityhub/qr-code-gen/refs/heads/main/demo-console.png)
 
 ## Development
 

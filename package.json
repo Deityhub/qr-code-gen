@@ -22,9 +22,16 @@
   },
   "exports": {
     ".": {
-      "import": "./dist/esm/index.js",
-      "require": "./dist/cjs/index.js",
-      "types": "./dist/index.d.ts"
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/esm/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/cjs/index.js"
+      },
+      "types": "./dist/index.d.ts",
+      "default": "./dist/esm/index.js"
     },
     "./umd": "./dist/umd/qr-code-gen.min.js"
   },
@@ -42,8 +49,13 @@
     "browser",
     "node"
   ],
-  "author": "deityhub",
+  "author": "Chizoba Jude Ojini <judoc96@gmail.com>",
+  "homepage": "https://github.com/Deityhub/qr-code-gen#readme",
   "license": "MIT",
+   "repository": "https://github.com/Deityhub/qr-code-gen",
+  "bugs": {
+    "url": "https://github.com/Deityhub/qr-code-gen/issues"
+  },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
     "@rollup/plugin-node-resolve": "^16.0.3",
