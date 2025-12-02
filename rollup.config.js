@@ -9,14 +9,14 @@ export default {
       file: 'dist/umd/qr-code-gen.js',
       format: 'umd',
       name: 'QRCodeGen',
-      sourcemap: true,
+      sourcemap: false,
     },
     {
       file: 'dist/umd/qr-code-gen.min.js',
       format: 'umd',
       name: 'QRCodeGen',
       plugins: [terser()],
-      sourcemap: true,
+      sourcemap: false,
     },
   ],
   plugins: [
