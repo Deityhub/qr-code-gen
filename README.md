@@ -209,6 +209,14 @@ Try the QR code generator in your browser! The demo allows you to:
 
 Open `src/example/demo.html` in your browser to try it out.
 
+### Browser Demo
+
+![QR Code Generator Browser Demo](./demo-browser.png)
+
+### Console Output
+
+![QR Code Generator Console Output](./demo-console.png)
+
 ## Development
 
 ### Building
@@ -244,14 +252,7 @@ MIT License - see LICENSE file for details.
 
 ## Changelog
 
-### v0.1.0
-
-- Initial release
-- Full QR Code specification implementation
-- Support for all versions (1-40) and error correction levels
-- Complete encoding modes including Kanji
-- SVG rendering with customizable styling
-- Comprehensive test suite
+See [CHANGELOG.md](./CHANGELOG.md) for a detailed history of changes.
 
 ## References
 
