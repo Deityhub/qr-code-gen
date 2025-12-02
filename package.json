@@ -1,6 +1,6 @@
 {
   "name": "@deityhub/qr-code-gen",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A robust, zero-dependency, highly configurable QR Code generator for your TypeScript/JavaScript projects.",
   "type": "module",
   "main": "./dist/cjs/index.js",
@@ -52,7 +52,7 @@
   "author": "Chizoba Jude Ojini <judoc96@gmail.com>",
   "homepage": "https://github.com/Deityhub/qr-code-gen#readme",
   "license": "MIT",
-   "repository": "https://github.com/Deityhub/qr-code-gen",
+  "repository": "https://github.com/Deityhub/qr-code-gen",
   "bugs": {
     "url": "https://github.com/Deityhub/qr-code-gen/issues"
   },
