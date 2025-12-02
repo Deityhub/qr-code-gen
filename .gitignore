@@ -1,0 +1,23 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+dist/
+build/
+
+# Coverage directory used by tools like istanbul
+coverage/
+*.lcov
+
+# nyc test coverage
+.nyc_output
+
+# Optional npm cache directory
+.npm
+
+# OS
+.DS_Store
+
+# Logs
+logs
+*.log
