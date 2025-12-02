@@ -4,7 +4,20 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
-## [1.0.0] - 2025-12-02
+## [1.0.1] - 2025-12-02
+
+### Fixed
+
+- Fixed CommonJS entry point configuration for better yarn/npm compatibility
+- Updated package.json exports to properly support both ESM and CommonJS
+- Added proper repository and homepage fields to package.json
+
+### Changed
+
+- Updated demo images to use GitHub raw URLs for better README rendering
+- Improved package metadata with author email and repository links
+
+## [0.1.0] - 2025-12-02
 
 ### Added
 

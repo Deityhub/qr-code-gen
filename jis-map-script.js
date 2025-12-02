@@ -1,7 +1,5 @@
 const fs = require('fs');
 const path = require('path');
-// import fs from 'fs';
-// import path from 'path';
 
 // Ranges of valid Double-Byte Shift JIS characters used in QR
 // Range 1: 0x8140 - 0x9FFC
