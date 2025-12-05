@@ -3,37 +3,26 @@
   "version": "1.0.1",
   "description": "A robust, zero-dependency, highly configurable QR Code generator for your TypeScript/JavaScript projects.",
   "type": "module",
-  "main": "./dist/cjs/index.js",
-  "module": "./dist/esm/index.js",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    },
+    "./umd": "./dist/umd/qr-code-gen.min.js"
+  },
   "scripts": {
-    "clean": "rimraf dist",
-    "build:esm": "tsc -p tsconfig.esm.json",
-    "build:cjs": "tsc -p tsconfig.cjs.json",
-    "build:umd": "rollup -c",
-    "build:types": "rollup --config rollup.types.config.js",
-    "postbuild": "rimraf dist/types",
-    "build": "npm run clean && npm run build:esm && npm run build:cjs && npm run build:umd && npm run build:types",
-    "prepublishOnly": "npm run build",
     "lint": "eslint .",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:coverage": "vitest run --coverage"
-  },
-  "exports": {
-    ".": {
-      "import": {
-        "types": "./dist/index.d.ts",
-        "default": "./dist/esm/index.js"
-      },
-      "require": {
-        "types": "./dist/index.d.ts",
-        "default": "./dist/cjs/index.js"
-      },
-      "types": "./dist/index.d.ts",
-      "default": "./dist/esm/index.js"
-    },
-    "./umd": "./dist/umd/qr-code-gen.min.js"
+    "test:coverage": "vitest run --coverage",
+    "build:tsup": "tsup",
+    "build:rollup": "rollup -c",
+    "build": "npm run build:tsup && npm run build:rollup",
+    "prepublishOnly": "npm run build"
   },
   "files": [
     "dist",
@@ -64,10 +53,10 @@
     "@types/node": "^24.10.1",
     "@vitest/coverage-v8": "^4.0.15",
     "eslint": "^9.39.1",
-    "rimraf": "^6.1.2",
     "rollup": "^4.53.3",
     "rollup-plugin-dts": "^6.3.0",
     "tslib": "^2.8.1",
+    "tsup": "^8.5.1",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.0.0",
     "vitest": "^4.0.15"
