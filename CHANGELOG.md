@@ -2,7 +2,24 @@
 
 All notable changes to this project will be documented in this file.
 
-## [Unreleased]
+## [2.0.0] - 2025-12-05
+
+### Changed
+
+- **BREAKING**: Streamlined build process by switching from TypeScript/Rollup to tsup
+- Replaced multiple build scripts (`build:esm`, `build:cjs`, `build:umd`, `build:types`) with simplified `build:tsup` and `build:rollup`
+- Updated package.json exports to use single entry points (`./dist/index.js` for CJS, `./dist/index.mjs` for ESM)
+- Removed separate TypeScript config files (`tsconfig.esm.json`, `tsconfig.cjs.json`) in favor of unified `tsconfig.json`
+- Deleted `rollup.types.config.js` and integrated type bundling into tsup
+- Added `tsup` as build dependency and removed `rimraf`
+
+### Technical Details
+
+- Build now uses `tsup` for main library bundling (CJS + ESM + type definitions)
+- Rollup remains for UMD bundle generation
+- Simplified output structure: single `dist/` folder instead of separate `cjs/`, `esm/`, `types/` directories
+- Type definitions now bundled automatically by tsup
+- Improved build performance and reduced configuration complexity
 
 ## [1.0.1] - 2025-12-02
 
