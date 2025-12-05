@@ -22,7 +22,7 @@ export default {
   plugins: [
     resolve(),
     typescript({ 
-      tsconfig: './tsconfig.base.json',
+      tsconfig: './tsconfig.json',
       declaration: false,
       declarationMap: false
     }),
