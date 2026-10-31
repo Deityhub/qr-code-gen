@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.2.0](https://github.com/Deityhub/qr-code-gen/compare/qr-code-gen-v2.1.0...qr-code-gen-v2.2.0) (2026-10-31)
+
+
+### Features
+
+* expose all QR options in the demo and render crisp modules ([cb7c208](https://github.com/Deityhub/qr-code-gen/commit/cb7c208944e058722d01d2c3154b2b732493cadb))
+* expose all QR options in the demo and render crisp modules ([#13](https://github.com/Deityhub/qr-code-gen/issues/13)) ([5ebd44f](https://github.com/Deityhub/qr-code-gen/commit/5ebd44f4d14d62a8920753cf2ed668bd74a4e76c))
+
+
+### Bug Fixes
+
+* correct QR symbol layout and mask selection ([948f5ea](https://github.com/Deityhub/qr-code-gen/commit/948f5ea10f359fb76c39aa903117ca998f50aa98))
+* correct QR symbol layout and mask selection ([032b5f8](https://github.com/Deityhub/qr-code-gen/commit/032b5f82a6948de4f5e90013608abd075e538930))
+* correct version 40-L block structure ([51d9c88](https://github.com/Deityhub/qr-code-gen/commit/51d9c88bcd178bd18f4d3ad97dec73f43010e66e))
+* correct version 40-L block structure ([421d0cc](https://github.com/Deityhub/qr-code-gen/commit/421d0ccb58b0f5c365cd8e5e632d566e0e5474b9))
+
 ## [2.1.0](https://github.com/Deityhub/qr-code-gen/compare/qr-code-gen-v2.0.0...qr-code-gen-v2.1.0) (2026-10-31)
 
 
