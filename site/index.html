@@ -158,7 +158,8 @@
             gap: 16px;
         }
         .grid.two {
-            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            row-gap: 14px;
         }
         .grid.two .grid {
             gap: 0px;
@@ -295,11 +296,34 @@
                         </select>
                     </div>
                     <div class="grid">
+                        <label for="mode">Encoding mode</label>
+                        <select id="mode" name="mode">
+                            <option value="Auto" selected>Auto (detect)</option>
+                            <option value="Numeric">Numeric</option>
+                            <option value="Alphanumeric">Alphanumeric</option>
+                            <option value="Byte">Byte</option>
+                            <option value="Kanji">Kanji</option>
+                        </select>
+                    </div>
+                    <div class="grid">
+                        <label for="version">Version</label>
+                        <select id="version" name="version">
+                            <option value="" selected>Auto (smallest)</option>
+                            <option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option><option value="11">11</option><option value="12">12</option><option value="13">13</option><option value="14">14</option><option value="15">15</option><option value="16">16</option><option value="17">17</option><option value="18">18</option><option value="19">19</option><option value="20">20</option><option value="21">21</option><option value="22">22</option><option value="23">23</option><option value="24">24</option><option value="25">25</option><option value="26">26</option><option value="27">27</option><option value="28">28</option><option value="29">29</option><option value="30">30</option><option value="31">31</option><option value="32">32</option><option value="33">33</option><option value="34">34</option><option value="35">35</option><option value="36">36</option><option value="37">37</option><option value="38">38</option><option value="39">39</option><option value="40">40</option>
+                        </select>
+                    </div>
+                    <div class="grid">
+                        <label for="quietZone">Quiet zone (modules)</label>
+                        <input type="number" id="quietZone" name="quietZone" value="4" min="0" max="20" step="1">
+                    </div>
+                    <div class="grid">
                         <label for="size">Download size (px)</label>
                         <input type="number" id="size" name="size" value="512" min="128" max="2048" step="32">
                     </div>
                 </div>
+                <p class="hint">Defaults are the recommended settings. A quiet zone below 4 modules can make codes harder to scan, and the download size is rounded to a whole number of pixels per module so the code stays sharp.</p>
 
+                <button class="secondary" type="button" id="reset">Reset to defaults</button>
                 <button class="primary" type="submit" id="generateBtn">Generate QR code</button>
                 <div class="downloads">
                     <button class="secondary" type="button" id="downloadSvg" disabled>Download SVG</button>
@@ -361,9 +385,19 @@
             const pngBtn = $('downloadPng');
             let current = null; // { matrix }
 
-            const getSize = () => {
-                const value = parseInt($('size').value, 10);
-                return Number.isFinite(value) ? Math.min(2048, Math.max(128, value)) : 512;
+            const DEFAULTS = { ecl: 'M', mode: 'Auto', version: '', quietZone: '4', size: '512' };
+            const clampInt = (id, min, max, fallback) => {
+                const value = parseInt($(id).value, 10);
+                return Number.isFinite(value) ? Math.min(max, Math.max(min, value)) : fallback;
+            };
+
+            // Draw every module with a whole number of pixels. A fractional module size is
+            // rasterised as a mix of narrow and wide modules, which phone cameras read badly.
+            const exportSize = (modules) => modules * Math.max(1, Math.round(clampInt('size', 128, 2048, 512) / modules));
+            const previewSize = (modules) => {
+                const dpr = window.devicePixelRatio || 1;
+                const avail = Math.min(360, $('qrContainer').clientWidth - 40);
+                return (modules * Math.max(1, Math.floor((avail * dpr) / modules))) / dpr;
             };
 
             const setState = (kind, text) => {
@@ -383,12 +417,28 @@
                 }
 
                 try {
-                    current = generateQRCode({ data, ecl: $('ecl').value, mode: 'Auto' });
-                    qrOutput.innerHTML = renderToSVG(current, 360);
+                    const config = {
+                        data,
+                        ecl: $('ecl').value,
+                        mode: $('mode').value,
+                        quietZone: clampInt('quietZone', 0, 20, 4),
+                    };
+                    if ($('version').value) {
+                        config.version = parseInt($('version').value, 10);
+                    }
+                    current = generateQRCode(config);
+                    const modules = current.length;
+                    qrOutput.innerHTML = renderToSVG(current, modules);
+                    const svg = qrOutput.querySelector('svg');
+                    const px = previewSize(modules);
+                    svg.style.width = svg.style.height = `${px}px`;
+                    svg.style.maxWidth = 'none';
                     svgBtn.disabled = pngBtn.disabled = false;
-                    setState('success', 'Scan this with your camera to verify the payload.');
+                    const version = (modules - 2 * config.quietZone - 17) / 4;
+                    setState('success', `Version ${version} (${modules - 2 * config.quietZone}×${modules - 2 * config.quietZone} modules). Scan this with your camera to verify the payload.`);
                 } catch (err) {
-                    setState('error', `Error: ${err.message ?? err}`);
+                    current = null;
+                    setState('error', `${err.message ?? err}`);
                 }
             };
 
@@ -403,13 +453,13 @@
 
             svgBtn.addEventListener('click', () => {
                 if (!current) { return; }
-                const svg = renderToSVG(current, getSize());
+                const svg = renderToSVG(current, exportSize(current.length));
                 save(new Blob([svg], { type: 'image/svg+xml' }), 'qr-code.svg');
             });
 
             pngBtn.addEventListener('click', () => {
                 if (!current) { return; }
-                const size = getSize();
+                const size = exportSize(current.length);
                 const img = new Image();
                 img.onload = () => {
                     const canvas = document.createElement('canvas');
@@ -429,8 +479,15 @@
                 event.preventDefault();
                 render();
             });
-            $('data').addEventListener('input', render);
-            $('ecl').addEventListener('change', render);
+            form.addEventListener('input', render);
+            form.addEventListener('change', render);
+            window.addEventListener('resize', () => current && render());
+            $('reset').addEventListener('click', () => {
+                for (const [id, value] of Object.entries(DEFAULTS)) {
+                    $(id).value = value;
+                }
+                render();
+            });
 
             render();
         })();
