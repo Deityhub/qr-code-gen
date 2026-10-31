@@ -1507,8 +1507,8 @@ export const RS_BLOCK_INFO: Record<number, Record<ErrorCorrectionLevel, VersionI
             totalCodewords: 3706,
             ecCodewordsPerBlock: 30,
             blocks: [
-                { numBlocks: 19, dataCodewordsPerBlock: 127 },
-                { numBlocks: 6, dataCodewordsPerBlock: 128 },
+                { numBlocks: 19, dataCodewordsPerBlock: 118 },
+                { numBlocks: 6, dataCodewordsPerBlock: 119 },
             ],
         },
         M: {
