@@ -91,7 +91,8 @@ export function renderToString(matrix: QRMatrix): string {
 }
 
 /**
- * Renders the QR Matrix as a basic SVG string.
+ * Renders the QR Matrix as an SVG string (white background, black modules).
+ * Adjacent dark modules in a row are merged into a single path segment.
  */
 export function renderToSVG(matrix: QRMatrix, size: number = 300): string {
     const modCount = matrix.length;
@@ -100,16 +101,23 @@ export function renderToSVG(matrix: QRMatrix, size: number = 300): string {
     let path = '';
 
     for (let r = 0; r < modCount; r++) {
-        for (let c = 0; c < modCount; c++) {
-            if (matrix[r][c]) {
-                // To keep file size small, we draw 1x1 rects.
-                // A more advanced renderer would combine adjacent horizontal modules.
-                path += `M${c * modSize},${r * modSize}h${modSize}v${modSize}h-${modSize}z `;
+        let c = 0;
+        while (c < modCount) {
+            if (!matrix[r][c]) {
+                c++;
+                continue;
             }
+            const start = c;
+            while (c < modCount && matrix[r][c]) {
+                c++;
+            }
+            const width = (c - start) * modSize;
+            path += `M${start * modSize},${r * modSize}h${width}v${modSize}h-${width}z`;
         }
     }
 
-    return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${size} ${size}" shape-rendering="crispEdges">
-        <path d="${path}" fill="black" />
-    </svg>`;
+    return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${size} ${size}" shape-rendering="crispEdges">`
+        + `<rect width="${size}" height="${size}" fill="white"/>`
+        + `<path d="${path}" fill="black"/>`
+        + '</svg>';
 }
