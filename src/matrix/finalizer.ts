@@ -65,57 +65,33 @@ export function finalizeMatrix(
     const size = matrix.length;
     const finalMatrix = matrix.map((row) => [...row]); // Copy
 
-    // 1. Place Format Information (15 bits)
+    // 1. Place Format Information (15 bits, bit 0 = LSB), two copies (ISO 18004 section 7.9.1):
+    //   Copy 1: column 8, bits 0-5 on rows 0-5, bits 6-7 on rows 7-8, bits 8-14 on the bottom rows
+    //           (size-7 .. size-1). The dark module at (size-8, 8) is NOT part of the format info.
+    //   Copy 2: row 8, bits 0-7 on columns size-1 .. size-8, bit 8 on column 7, bits 9-14 on columns 5..0.
     const formatData = getFormatBits(ecl, maskId);
 
-    // Bits are placed 0 (LSB) to 14 (MSB)
-    // There are two copies.
-
-    // Copy 1: Around Top-Left Finder
-    // Indices in FormatData: 14..0
-    // Map to specific coordinates:
-    // Bits 14-9 -> (0..5, 8)
-    // Bit 8 -> (7, 8)
-    // Bit 7 -> (8, 8)
-    // Bit 6 -> (8, 7)
-    // Bits 5-0 -> (8, 5..0)
-
     for (let i = 0; i < 15; i++) {
-        const bit = (formatData >> i) & 1;
-        const isDark = bit === 1;
+        const isDark = ((formatData >> i) & 1) === 1;
 
-        // Copy 1 (Top Left)
-        if (i <= 5) {
-            // 0-5
-            finalMatrix[8][i] = isDark;
-        } else if (i === 6) {
-            finalMatrix[8][7] = isDark;
-        } else if (i === 7) {
-            // The corner, usually overlaps but here we explicit
-            finalMatrix[8][8] = isDark;
-        } else if (i === 8) {
-            finalMatrix[7][8] = isDark;
+        // Copy 1 (column 8)
+        if (i < 6) {
+            finalMatrix[i][8] = isDark;
+        } else if (i < 8) {
+            finalMatrix[i + 1][8] = isDark;
         } else {
-            // 9-14
-            finalMatrix[14 - i][8] = isDark;
+            finalMatrix[size - 15 + i][8] = isDark;
         }
 
-        // Copy 2 (Split between Top-Right and Bottom-Left)
-        // Bits 14-8 -> (8, size-1 .. size-8)  [Bottom-Left of Top-Right finder area] -- WAIT.
-        // Correction: Spec says:
-        // Bits 0-7 -> (8, size-1 ... size-8)  [Near Top Right]
-        // Bits 8-14 -> (size-7 ... size-1, 8) [Near Bottom Left]
-
-        if (i < 7) {
+        // Copy 2 (row 8)
+        if (i < 8) {
             finalMatrix[8][size - 1 - i] = isDark;
+        } else if (i === 8) {
+            finalMatrix[8][7] = isDark;
         } else {
-            finalMatrix[size - 8 + (i - 7)][8] = isDark;
+            finalMatrix[8][14 - i] = isDark;
         }
     }
-
-    // Dark Module fixed check (already done in init, but Format overlaps one)
-    // The "Dark Module" is at (4V+9, 8).
-    // Format bits do not overwrite the Dark Module.
 
     // 2. Place Version Information (Version >= 7)
     if (version >= 7) {

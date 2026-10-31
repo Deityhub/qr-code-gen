@@ -86,7 +86,7 @@
             padding: 32px;
         }
         .shell {
-            width: min(1040px, 100%);
+            width: min(1302px, 100%);
             background: var(--surface);
             border-radius: 18px;
             border: 1px solid var(--border);
@@ -435,7 +435,12 @@
                     svg.style.maxWidth = 'none';
                     svgBtn.disabled = pngBtn.disabled = false;
                     const version = (modules - 2 * config.quietZone - 17) / 4;
-                    setState('success', `Version ${version} (${modules - 2 * config.quietZone}×${modules - 2 * config.quietZone} modules). Scan this with your camera to verify the payload.`);
+                    const dims = modules - 2 * config.quietZone;
+                    if (config.quietZone < 4) {
+                        setState('error', `Version ${version} (${dims}×${dims} modules). A quiet zone below 4 modules often fails to scan; set it back to 4 for reliable results.`);
+                    } else {
+                        setState('success', `Version ${version} (${dims}×${dims} modules). Scan this with your camera to verify the payload.`);
+                    }
                 } catch (err) {
                     current = null;
                     setState('error', `${err.message ?? err}`);

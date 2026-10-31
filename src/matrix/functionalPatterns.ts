@@ -103,21 +103,26 @@ export function initializeMatrix(version: number): { matrix: QRMatrix; reserved:
 
     // --- 6. Reserve Format/Version Areas ---
     // We don't write data here yet, but we must mark them reserved so data bits skip them.
+    // Only mark them: the format strips cross the timing patterns at (6, 8) and (8, 6),
+    // whose modules must keep their timing value.
+    const reserve = (r: number, c: number, w: number, h: number) => {
+        for (let i = 0; i < h; i++) {
+            for (let j = 0; j < w; j++) {
+                reserved[r + i][c + j] = true;
+            }
+        }
+    };
 
     // Format Info (around finders)
-    // Vertical strip at Top-Left
-    drawRect(0, 8, 1, 9, false); // reserve, value doesn't matter yet
-    // Horizontal strip at Top-Left
-    drawRect(8, 0, 9, 1, false);
-    // Vertical strip at Bottom-Left
-    drawRect(size - 7, 8, 1, 7, false);
-    // Horizontal strip at Top-Right
-    drawRect(8, size - 8, 8, 1, false);
+    reserve(0, 8, 1, 9); // Vertical strip at Top-Left
+    reserve(8, 0, 9, 1); // Horizontal strip at Top-Left
+    reserve(size - 7, 8, 1, 7); // Vertical strip at Bottom-Left
+    reserve(8, size - 8, 8, 1); // Horizontal strip at Top-Right
 
     // Version Info (V7+) - 3x6 blocks near Top-Right and Bottom-Left
     if (version >= 7) {
-        drawRect(0, size - 11, 3, 6, false); // Top-Right neighbor
-        drawRect(size - 11, 0, 6, 3, false); // Bottom-Left neighbor
+        reserve(0, size - 11, 3, 6); // Top-Right neighbor
+        reserve(size - 11, 0, 6, 3); // Bottom-Left neighbor
     }
 
     return { matrix, reserved };

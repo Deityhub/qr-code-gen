@@ -43,7 +43,7 @@ export function generateQRCode(config: QRCodeConfig): QRMatrix {
     placeData(baseMatrix, reserved, dataCodewords, eccCodewords, versionInfo);
 
     // 7. Masking (Find optimal mask)
-    const { maskId, maskedMatrix } = chooseBestMask(baseMatrix, reserved);
+    const { maskId, maskedMatrix } = chooseBestMask(baseMatrix, reserved, versionInfo.version, ecl);
 
     // 8. Finalize (Add Format and Version Info)
     const finalMatrix = finalizeMatrix(maskedMatrix, versionInfo.version, ecl, maskId);
