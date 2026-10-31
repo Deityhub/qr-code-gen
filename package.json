@@ -22,6 +22,7 @@
     "build:tsup": "tsup",
     "build:rollup": "rollup -c",
     "build": "npm run build:tsup && npm run build:rollup",
+    "build:site": "npm run build && node -e \"require('fs').cpSync('dist/umd/qr-code-gen.min.js','site/qr-code-gen.min.js')\"",
     "prepublishOnly": "npm run build"
   },
   "files": [
