@@ -13,7 +13,7 @@ A robust, zero-dependency, highly configurable QR code generator for TypeScript 
 - **Complete QR Code Implementation**: versions 1-40 with automatic version selection
 - **All Encoding Modes**: Numeric, Alphanumeric, Byte (UTF-8) and Kanji, with automatic mode detection
 - **Error Correction Levels**: L (~7%), M (~15%), Q (~25%), H (~30%)
-- **Renderers**: compact SVG string and a console (block character) renderer; the raw matrix is available for any custom renderer (canvas, PNG, PDF, ...)
+- **Renderers**: SVG string, PNG image (`Uint8Array`) and a console (block character) renderer; the raw matrix is available for any custom renderer
 - **Zero Dependencies**: pure TypeScript
 - **Full TypeScript Support**: typed config, matrix and error classes
 - **Browser & Node.js**: ESM and UMD builds (Node 18+)
@@ -91,6 +91,15 @@ Renders a matrix as an SVG string with a white background and black modules. Adj
 
 Returns the SVG markup as a `string`.
 
+### `renderToPng(matrix, size?)`
+
+Renders a matrix as a PNG image (1-bit, black modules on white) with no dependencies. It works in the browser and in Node.js.
+
+- `matrix` (`QRMatrix`): the matrix from `generateQRCode`
+- `size?` (`number`, default `300`): requested width and height in pixels
+
+Every module is drawn with the same whole number of pixels so the code stays sharp, so the image side is the closest multiple of `matrix.length` to `size` (never less than one pixel per module). Returns the PNG file contents as a `Uint8Array`.
+
 ### `renderToString(matrix)`
 
 Renders a matrix as a string of block characters (`██`), useful for console output. Returns a `string`.
@@ -107,30 +116,28 @@ const matrix = generateQRCode({ data: 'https://example.com', ecl: 'Q' });
 writeFileSync('qr.svg', renderToSVG(matrix, 512));
 ```
 
+### Save a PNG (Node.js)
+
+```typescript
+import { writeFileSync } from 'node:fs';
+import { generateQRCode, renderToPng } from '@deityhub/qr-code-gen';
+
+const matrix = generateQRCode({ data: 'https://example.com' });
+writeFileSync('qr.png', renderToPng(matrix, 512));
+```
+
 ### Download a PNG (browser)
 
 ```typescript
-import { generateQRCode, renderToSVG } from '@deityhub/qr-code-gen';
+import { generateQRCode, renderToPng } from '@deityhub/qr-code-gen';
 
 const matrix = generateQRCode({ data: 'https://example.com' });
+const blob = new Blob([renderToPng(matrix, 512)], { type: 'image/png' });
 
-// Use a whole number of pixels per module so every module is the same size
-const pixelsPerModule = 8;
-const size = matrix.length * pixelsPerModule;
-
-const img = new Image();
-img.onload = () => {
-    const canvas = document.createElement('canvas');
-    canvas.width = canvas.height = size;
-    canvas.getContext('2d')!.drawImage(img, 0, 0, size, size);
-    canvas.toBlob((blob) => {
-        const a = document.createElement('a');
-        a.href = URL.createObjectURL(blob!);
-        a.download = 'qr-code.png';
-        a.click();
-    }, 'image/png');
-};
-img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(renderToSVG(matrix, size));
+const a = document.createElement('a');
+a.href = URL.createObjectURL(blob);
+a.download = 'qr-code.png';
+a.click();
 ```
 
 ### Advanced configuration
@@ -166,7 +173,7 @@ With `mode: 'Auto'` (the default) the order of preference is Numeric, Alphanumer
 ## Getting reliable scans
 
 - **Keep the quiet zone at 4 modules** (the default). Smaller margins often fail to scan.
-- **Draw every module with a whole number of pixels.** A size that isn't a multiple of `matrix.length` gives modules slightly different widths, which cameras read poorly. Prefer `size = matrix.length * n`.
+- **Draw every module with a whole number of pixels.** A size that isn't a multiple of `matrix.length` gives modules slightly different widths, which cameras read poorly. `renderToPng` does this for you; with `renderToSVG`, prefer `size = matrix.length * n`.
 - **Use a higher error correction level** (Q or H) for printed codes that may get scuffed. Higher levels make the code denser, so keep it large enough to scan.
 - Keep strong contrast: dark modules on a light background.
 
@@ -201,6 +208,7 @@ Versions 1-40, from 21×21 to 177×177 modules (`4 * version + 17`), selected au
 ```
 src/
   index.ts          generateQRCode, renderToSVG, renderToString
+  png.ts            renderToPng (dependency-free PNG encoder)
   config.ts         DEFAULT_CONFIG, CapacityError, EncodingError
   types.ts          public types
   constants.ts      spec tables (block structure, alignment positions, indicators)
@@ -225,7 +233,7 @@ site/               the demo site published at qr.deityhub.com
 
 - Enter any text or URL and see the QR code update as you type
 - Set every library option: error correction, encoding mode, version and quiet zone
-- Download the result as SVG or PNG at a chosen size
+- Download the result as SVG or PNG at a chosen size (the PNG is made with `renderToPng`)
 - Run entirely in the browser; nothing is sent to a server
 
 ![QR Code Generator Browser Demo](https://raw.githubusercontent.com/Deityhub/qr-code-gen/refs/heads/main/docs/demo-browser.png)

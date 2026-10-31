@@ -376,7 +376,7 @@
     <script src="./qr-code-gen.min.js"></script>
     <script>
         (() => {
-            const { generateQRCode, renderToSVG } = window.QRCodeGen;
+            const { generateQRCode, renderToSVG, renderToPng } = window.QRCodeGen;
             const $ = (id) => document.getElementById(id);
             const form = $('qrForm');
             const message = $('message');
@@ -464,20 +464,7 @@
 
             pngBtn.addEventListener('click', () => {
                 if (!current) { return; }
-                const size = exportSize(current.length);
-                const img = new Image();
-                img.onload = () => {
-                    const canvas = document.createElement('canvas');
-                    canvas.width = canvas.height = size;
-                    const ctx = canvas.getContext('2d');
-                    ctx.fillStyle = '#fff';
-                    ctx.fillRect(0, 0, size, size);
-                    ctx.imageSmoothingEnabled = false;
-                    ctx.drawImage(img, 0, 0, size, size);
-                    canvas.toBlob((blob) => blob && save(blob, 'qr-code.png'), 'image/png');
-                };
-                const svg = renderToSVG(current, size);
-                img.src = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
+                save(new Blob([renderToPng(current, exportSize(current.length))], { type: 'image/png' }), 'qr-code.png');
             });
 
             form.addEventListener('submit', (event) => {
