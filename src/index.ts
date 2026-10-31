@@ -1,6 +1,7 @@
 // Re-export types so the consumer can use them
 export * from './types';
 export * from './config';
+export { renderToPng } from './png';
 
 // Import internal dependencies
 import { DEFAULT_CONFIG } from './config';
