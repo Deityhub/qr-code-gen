@@ -30,10 +30,10 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          # Node 24 ships npm >= 11.5.1, required for npm trusted publishing (OIDC).
-          # No registry-url: it injects a placeholder NODE_AUTH_TOKEN that breaks OIDC.
+          # npm >= 11.5.1 and Node >= 22.14 are required for trusted publishing (OIDC).
+          # No dependency cache in the publishing job (cache-poisoning hardening).
           node-version: 24
-          cache: npm
+          registry-url: https://registry.npmjs.org
       - run: npm ci
       - run: npm test
       - run: npm publish --provenance --access public
