@@ -262,6 +262,10 @@ Contributions are welcome! Please ensure:
 3. New features include appropriate tests
 4. Documentation is updated for any API changes
 
+## Author
+
+**Chizoba Jude Ojini** ([judeojini.com](https://judeojini.com))
+
 ## License
 
 MIT License - see LICENSE file for details.
