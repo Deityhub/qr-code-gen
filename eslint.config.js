@@ -67,6 +67,7 @@ export default [
       'coverage/**',
       'site/**',
       '*.js',
+      'scripts/**',
       'src/encoder/sjisMap.ts'
     ],
   },

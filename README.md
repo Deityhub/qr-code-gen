@@ -1,5 +1,7 @@
 # QR Code Generator
 
+**Live demo: [qr.deityhub.com](https://qr.deityhub.com)**
+
 A robust, zero-dependency, highly configurable QR code generator for TypeScript and JavaScript projects. This library implements the complete QR Code specification (ISO/IEC 18004) with support for all versions (1-40), error correction levels, and encoding modes.
 
 ## Features
@@ -225,11 +227,11 @@ Open `src/example/demo.html` in your browser to try it out.
 
 ### Browser Demo
 
-![QR Code Generator Browser Demo](https://raw.githubusercontent.com/Deityhub/qr-code-gen/refs/heads/main/demo-browser.png)
+![QR Code Generator Browser Demo](https://raw.githubusercontent.com/Deityhub/qr-code-gen/refs/heads/main/docs/demo-browser.png)
 
 ### Console Output
 
-![QR Code Generator Console Output](https://raw.githubusercontent.com/Deityhub/qr-code-gen/refs/heads/main/demo-console.png)
+![QR Code Generator Console Output](https://raw.githubusercontent.com/Deityhub/qr-code-gen/refs/heads/main/docs/demo-console.png)
 
 ## Development
 
@@ -259,6 +261,10 @@ Contributions are welcome! Please ensure:
 2. Code follows the existing style (`npm run lint`)
 3. New features include appropriate tests
 4. Documentation is updated for any API changes
+
+## Author
+
+**Chizoba Jude Ojini** ([judeojini.com](https://judeojini.com))
 
 ## License
 
