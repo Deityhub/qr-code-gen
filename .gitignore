@@ -21,3 +21,6 @@ coverage/
 # Logs
 logs
 *.log
+
+# Demo site bundle (copied from dist at build)
+site/qr-code-gen.min.js
