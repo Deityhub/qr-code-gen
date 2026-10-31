@@ -32,4 +32,6 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          # create the project on first run; ignore "already exists" on later runs
+          preCommands: npx wrangler pages project create qr-code-gen --production-branch=main || true
           command: pages deploy site --project-name=qr-code-gen --branch=main
