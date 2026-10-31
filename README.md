@@ -16,7 +16,7 @@ A robust, zero-dependency, highly configurable QR code generator for TypeScript 
 - **Renderers**: compact SVG string and a console (block character) renderer; the raw matrix is available for any custom renderer (canvas, PNG, PDF, ...)
 - **Zero Dependencies**: pure TypeScript
 - **Full TypeScript Support**: typed config, matrix and error classes
-- **Browser & Node.js**: ESM and UMD builds (Node 18+)
+- **Browser & Node.js**: ESM, CommonJS and UMD builds (Node 18+)
 
 ## Installation
 
@@ -43,6 +43,12 @@ import { generateQRCode, renderToSVG } from '@deityhub/qr-code-gen';
 
 const matrix = generateQRCode({ data: 'Hello, World!' });
 const svg = renderToSVG(matrix, 300);
+```
+
+CommonJS works too:
+
+```js
+const { generateQRCode, renderToSVG } = require('@deityhub/qr-code-gen');
 ```
 
 ## API Reference
