@@ -233,7 +233,7 @@ site/               the demo site published at qr.deityhub.com
 
 - Enter any text or URL and see the QR code update as you type
 - Set every library option: error correction, encoding mode, version and quiet zone
-- Download the result as SVG or PNG at a chosen size (the PNG is made with `renderToPng`)
+- Download the result as SVG or PNG at a chosen size
 - Run entirely in the browser; nothing is sent to a server
 
 ![QR Code Generator Browser Demo](https://raw.githubusercontent.com/Deityhub/qr-code-gen/refs/heads/main/docs/demo-browser.png)
