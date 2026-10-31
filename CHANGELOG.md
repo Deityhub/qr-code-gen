@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.3.0](https://github.com/Deityhub/qr-code-gen/compare/qr-code-gen-v2.2.1...qr-code-gen-v2.3.0) (2026-10-31)
+
+
+### Features
+
+* add renderToPng ([#18](https://github.com/Deityhub/qr-code-gen/issues/18)) ([65733ad](https://github.com/Deityhub/qr-code-gen/commit/65733aded92b64526beae97a24aedcf74104086f))
+
 ## [2.2.1](https://github.com/Deityhub/qr-code-gen/compare/qr-code-gen-v2.2.0...qr-code-gen-v2.2.1) (2026-10-31)
 
 
