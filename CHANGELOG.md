@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.2.1](https://github.com/Deityhub/qr-code-gen/compare/qr-code-gen-v2.2.0...qr-code-gen-v2.2.1) (2026-10-31)
+
+
+### Bug Fixes
+
+* emit a real CommonJS build ([5918d51](https://github.com/Deityhub/qr-code-gen/commit/5918d51a55ac9a5442fa67474685fb1e9864c3be))
+* emit a real CommonJS build ([64da6b6](https://github.com/Deityhub/qr-code-gen/commit/64da6b624e71ad3cf11eac9d3ed27658a3007144))
+
 ## [2.2.0](https://github.com/Deityhub/qr-code-gen/compare/qr-code-gen-v2.1.0...qr-code-gen-v2.2.0) (2026-10-31)
 
 
