@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest';
-import { generateQRCode, renderToString } from '../src/index';
+import { generateQRCode, renderToString, renderToSVG } from '../src/index';
 
 describe('Integration: generateQRCode', () => {
     test('Generates a Version 1 QR Code (Basic)', () => {
@@ -49,5 +49,20 @@ describe('Integration: generateQRCode', () => {
         // V10 is 57x57
         // + 8 quiet zone = 65
         expect(matrix.length).toBe(65);
+    });
+});
+
+describe('renderToSVG', () => {
+    test('has a white background and merges adjacent dark modules', () => {
+        const matrix = generateQRCode({ data: 'TEST', version: 1 });
+        const svg = renderToSVG(matrix, 290);
+
+        expect(svg.startsWith('<svg')).toBe(true);
+        expect(svg).toContain('<rect width="290" height="290" fill="white"/>');
+
+        const segments = svg.match(/M/g)?.length ?? 0;
+        const darkModules = matrix.flat().filter(Boolean).length;
+        expect(segments).toBeGreaterThan(0);
+        expect(segments).toBeLessThan(darkModules);
     });
 });
