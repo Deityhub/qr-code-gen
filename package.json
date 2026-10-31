@@ -3,15 +3,20 @@
   "version": "2.2.0",
   "description": "A robust, zero-dependency, highly configurable QR Code generator for your TypeScript/JavaScript projects.",
   "type": "module",
-  "main": "./dist/index.js",
+  "main": "./dist/index.cjs",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "sideEffects": false,
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.js"
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.mjs"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
     },
     "./umd": "./dist/umd/qr-code-gen.min.js"
   },
@@ -20,6 +25,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
+    "test:package": "node scripts/smoke-test.mjs",
     "build:tsup": "tsup",
     "build:rollup": "rollup -c",
     "build": "npm run build:tsup && npm run build:rollup",
