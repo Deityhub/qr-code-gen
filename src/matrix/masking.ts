@@ -1,4 +1,5 @@
-import { QRMatrix } from '../types';
+import { QRMatrix, ErrorCorrectionLevel } from '../types';
+import { finalizeMatrix } from './finalizer';
 
 // The 8 Mask Pattern Functions defined by ISO 18004
 // We use _ prefix for unused parameters to satisfy strict linters.
@@ -72,13 +73,13 @@ function calculatePenalty(matrix: QRMatrix): number {
     }
 
     // --- Rule 3: Patterns looking like Finder Patterns ---
-    // Pattern: 1 0 1 1 1 0 1 (Dark-Light-D-D-D-L-D)
-    // Needs 4 light modules on either side.
-    // Penalty: 40 points per occurrence
+    // Pattern: 1 0 1 1 1 0 1 (Dark-Light-D-D-D-L-D), anywhere in a row or column.
+    // Penalty: 40 points per occurrence.
+    // The spec only asks for patterns with 4 light modules on one side, but scanners look for
+    // the 1:1:3:1:1 ratio along any scan line, so every occurrence can be mistaken for a finder.
 
     // Helper closure to check a single array (row or column)
     const checkRow = (row: boolean[]) => {
-        // We look for sequence T F T T T F T
         for (let c = 0; c < size - 6; c++) {
             if (
                 row[c] &&
@@ -89,15 +90,7 @@ function calculatePenalty(matrix: QRMatrix): number {
                 !row[c + 5] &&
                 row[c + 6]
             ) {
-                // Found the core pattern. Check for 4 whites on left or right.
-                const leftSafe =
-                    c - 4 >= 0 && !row[c - 1] && !row[c - 2] && !row[c - 3] && !row[c - 4];
-                const rightSafe =
-                    c + 10 < size && !row[c + 7] && !row[c + 8] && !row[c + 9] && !row[c + 10];
-
-                if (leftSafe || rightSafe) {
-                    score += 40;
-                }
+                score += 40;
             }
         }
     };
@@ -138,10 +131,14 @@ function calculatePenalty(matrix: QRMatrix): number {
 
 /**
  * Tries all 8 masks and returns the best one (lowest penalty).
+ * Each candidate is scored as the finished symbol (format and version info included),
+ * because those modules take part in the penalty rules too.
  */
 export function chooseBestMask(
     baseMatrix: QRMatrix,
     reserved: boolean[][],
+    version: number,
+    ecl: ErrorCorrectionLevel,
 ): { maskId: number; maskedMatrix: QRMatrix } {
     let bestScore = Infinity;
     let bestMaskId = 0;
@@ -170,7 +167,7 @@ export function chooseBestMask(
         }
 
         // Score
-        const score = calculatePenalty(testMatrix);
+        const score = calculatePenalty(finalizeMatrix(testMatrix, version, ecl, id));
 
         if (score < bestScore) {
             bestScore = score;

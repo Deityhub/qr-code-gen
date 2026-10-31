@@ -82,49 +82,25 @@ export function placeData(
     const size = matrix.length;
     let bitIndex = 0;
 
-    // Start from bottom-right
-    // Columns are paired (idx, idx-1). We move left by 2.
+    // Start from bottom-right. Columns are visited in pairs (rightCol, rightCol - 1), moving left
+    // by 2. The direction alternates for every pair (the first pair goes up), including across
+    // the vertical timing column, which is skipped without affecting the alternation.
+    let isUpwards = true;
     for (let rightCol = size - 1; rightCol > 0; rightCol -= 2) {
-        // Exception: Vertical Timing Pattern is at col 6.
-        // If we reach col 6, shift left by 1 to skip it.
         if (rightCol === 6) {
             rightCol -= 1;
         }
 
         const leftCol = rightCol - 1;
 
-        // Determine direction: Up or Down?
-        // Logic: (Size - 1) is odd? No.
-        // Columns 1-indexed in spec, 0-indexed here.
-        // We can track direction easily:
-        // If (rightCol parity) logic is complex, just toggle a boolean.
-        // Easier: Calculate based on column index logic relative to start.
-        // Or simply:
-
-        // We need to know which way we are going.
-        // The first pair (size-1, size-2) goes UP.
-        // The next pair goes DOWN.
-        // However, checking the specific condition:
-        // ((rightCol + 1) / 2) parity determines direction?
-        // Let's use a simple toggle.
-
-        const isUpwards = ((size - 1 - rightCol) / 2) % 2 === 0;
-
-        if (isUpwards) {
-            // Go UP
-            for (let row = size - 1; row >= 0; row--) {
-                // Visit right, then left
-                processModule(row, rightCol);
-                processModule(row, leftCol);
-            }
-        } else {
-            // Go DOWN
-            for (let row = 0; row < size; row++) {
-                // Visit right, then left
-                processModule(row, rightCol);
-                processModule(row, leftCol);
-            }
+        for (let i = 0; i < size; i++) {
+            const row = isUpwards ? size - 1 - i : i;
+            // Visit right, then left
+            processModule(row, rightCol);
+            processModule(row, leftCol);
         }
+
+        isUpwards = !isUpwards;
     }
 
     function processModule(r: number, c: number) {
