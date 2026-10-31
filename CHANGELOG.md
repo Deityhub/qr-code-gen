@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.1.0](https://github.com/Deityhub/qr-code-gen/compare/qr-code-gen-v2.0.0...qr-code-gen-v2.1.0) (2026-10-31)
+
+
+### Features
+
+* demo site with SVG/PNG download and SEO ([#4](https://github.com/Deityhub/qr-code-gen/issues/4)) ([7ffcf5b](https://github.com/Deityhub/qr-code-gen/commit/7ffcf5b4a18bdf81ad10294bdfd126c9cb234b33))
+* setup QR code generator ([1fc36e9](https://github.com/Deityhub/qr-code-gen/commit/1fc36e9114c82d3a071cb4c8ced35890f8317ed5))
+
+
+### Bug Fixes
+
+* correct path for type definitions in package.json ([8c8c2aa](https://github.com/Deityhub/qr-code-gen/commit/8c8c2aa6f1f2451059130df24ff83026929e1cdf))
+* merge runs and add background in renderToSVG ([2330f8d](https://github.com/Deityhub/qr-code-gen/commit/2330f8d27cc597af9f371935ae1eb3e33b623bad))
+* merge runs and add background in renderToSVG ([019a229](https://github.com/Deityhub/qr-code-gen/commit/019a2295e96afd44072936ab0959927c138ce835))
+* update package name to include scope ([3b56053](https://github.com/Deityhub/qr-code-gen/commit/3b560530aa2c467b24eda8c7b9296d904174231d))
+
 ## [2.0.0] - 2025-12-05
 
 ### Changed
