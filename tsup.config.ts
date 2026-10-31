@@ -11,7 +11,7 @@ export default defineConfig({
     treeshake: true,
     outExtension({ format }) {
         return {
-            js: format === 'cjs' ? '.js' : '.mjs',
+            js: format === 'cjs' ? '.cjs' : '.mjs',
         };
     },
 });
