@@ -1,0 +1,14 @@
+{
+  "name": "QR Code Generator",
+  "short_name": "QR Generator",
+  "description": "Free custom QR code generator. Change colours and shapes, add your logo, and download as SVG or PNG.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0e7bf7",
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }
+  ]
+}
