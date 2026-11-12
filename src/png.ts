@@ -1,4 +1,5 @@
 import { QRMatrix } from './types';
+import { parseColor, RGBA } from './style/color';
 
 const PNG_SIGNATURE = [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a];
 
@@ -71,8 +72,15 @@ function zlibStore(raw: Uint8Array): Uint8Array {
     return concat(parts);
 }
 
+export interface PngOptions {
+    /** Colour of the modules (`#rrggbb`, `rgb()`, `hsl()`, basic name). Default black. */
+    foreground?: string;
+    /** Background colour or 'transparent'. Default white. */
+    background?: string;
+}
+
 /**
- * Renders the QR Matrix as a PNG image (1-bit, black modules on white).
+ * Renders the QR Matrix as a PNG image (1-bit, black modules on white by default).
  *
  * Every module is drawn with the same whole number of pixels so the code stays sharp
  * and scans reliably, so the image side is `matrix.length * Math.max(1, Math.round(size / matrix.length))`
@@ -80,15 +88,17 @@ function zlibStore(raw: Uint8Array): Uint8Array {
  *
  * @param matrix The QR matrix from `generateQRCode`
  * @param size Requested width/height in pixels (default 300)
+ * @param options Solid `foreground` and `background` colours (a 2-colour palette image is written)
  * @returns The PNG file contents
+ * @throws {StyleError} If a colour is not supported
  */
-export function renderToPng(matrix: QRMatrix, size: number = 300): Uint8Array {
+export function renderToPng(matrix: QRMatrix, size: number = 300, options: PngOptions = {}): Uint8Array {
     const modules = matrix.length;
     const scale = Math.max(1, Math.round(size / modules));
     const width = modules * scale;
     const rowBytes = Math.ceil(width / 8);
 
-    // One filter byte (0 = none) followed by the packed pixels; 1 = white, 0 = black
+    // One filter byte (0 = none) followed by the packed pixels; 1 = background, 0 = foreground
     const raw = new Uint8Array((rowBytes + 1) * width);
     for (let y = 0; y < width; y++) {
         const row = matrix[Math.floor(y / scale)];
@@ -101,13 +111,24 @@ export function renderToPng(matrix: QRMatrix, size: number = 300): Uint8Array {
         }
     }
 
-    // IHDR: width, height, bit depth 1, colour type 0 (greyscale), default compression/filter, no interlace
-    const ihdr = Uint8Array.from([...uint32(width), ...uint32(width), 1, 0, 0, 0, 0]);
+    const custom = options.foreground !== undefined || options.background !== undefined;
+    const parts: Uint8Array[] = [Uint8Array.from(PNG_SIGNATURE)];
 
-    return concat([
-        Uint8Array.from(PNG_SIGNATURE),
-        chunk('IHDR', ihdr),
-        chunk('IDAT', zlibStore(raw)),
-        chunk('IEND', new Uint8Array(0)),
-    ]);
+    if (custom) {
+        // IHDR: bit depth 1, colour type 3 (palette); index 0 = foreground, 1 = background
+        const fg = parseColor(options.foreground ?? '#000000', 'foreground');
+        const bg = parseColor(options.background ?? '#ffffff', 'background');
+        const rgb = (c: RGBA) => [Math.round(c.r), Math.round(c.g), Math.round(c.b)];
+        parts.push(chunk('IHDR', Uint8Array.from([...uint32(width), ...uint32(width), 1, 3, 0, 0, 0])));
+        parts.push(chunk('PLTE', Uint8Array.from([...rgb(fg), ...rgb(bg)])));
+        if (fg.a < 1 || bg.a < 1) {
+            parts.push(chunk('tRNS', Uint8Array.from([Math.round(fg.a * 255), Math.round(bg.a * 255)])));
+        }
+    } else {
+        // IHDR: bit depth 1, colour type 0 (greyscale), default compression/filter, no interlace
+        parts.push(chunk('IHDR', Uint8Array.from([...uint32(width), ...uint32(width), 1, 0, 0, 0, 0])));
+    }
+
+    parts.push(chunk('IDAT', zlibStore(raw)), chunk('IEND', new Uint8Array(0)));
+    return concat(parts);
 }

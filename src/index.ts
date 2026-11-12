@@ -2,10 +2,13 @@
 export * from './types';
 export * from './config';
 export { renderToPng } from './png';
+export type { PngOptions } from './png';
+export { renderSvgToPng } from './browser';
+export * from './style';
 
 // Import internal dependencies
 import { DEFAULT_CONFIG } from './config';
-import { QRMatrix, QRCodeConfig } from './types';
+import { QRMatrix, QRCodeConfig, QRSymbol } from './types';
 import { selectMode } from './encoder/modeSelector';
 import { getMinimumVersion } from './encoder/capacity';
 import { encodeData } from './encoder/dataEncoder';
@@ -23,6 +26,16 @@ import { finalizeMatrix } from './matrix/finalizer';
  * @throws {EncodingError} If data contains characters invalid for the selected mode.
  */
 export function generateQRCode(config: QRCodeConfig): QRMatrix {
+    return generateQRSymbol(config).matrix;
+}
+
+/**
+ * Generates a QR code together with the version, level, mode and quiet zone that were used.
+ * Use it with `renderToStyledSVG` to customise colours, shapes and add a logo.
+ * @throws {CapacityError} If data is too large for the version/standard.
+ * @throws {EncodingError} If data contains characters invalid for the selected mode.
+ */
+export function generateQRSymbol(config: QRCodeConfig): QRSymbol {
     // 1. Apply Defaults
     const mode = selectMode(config.data, config.mode);
     const ecl = config.ecl || DEFAULT_CONFIG.ecl;
@@ -50,11 +63,14 @@ export function generateQRCode(config: QRCodeConfig): QRMatrix {
     const finalMatrix = finalizeMatrix(maskedMatrix, versionInfo.version, ecl, maskId);
 
     // 9. Apply Quiet Zone (Margin)
-    if (quietZone > 0) {
-        return applyQuietZone(finalMatrix, quietZone);
-    }
-
-    return finalMatrix;
+    return {
+        matrix: quietZone > 0 ? applyQuietZone(finalMatrix, quietZone) : finalMatrix,
+        version: versionInfo.version,
+        ecl,
+        mode,
+        quietZone: Math.max(0, quietZone),
+        modules: finalMatrix.length,
+    };
 }
 
 /**
