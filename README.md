@@ -6,7 +6,7 @@
 
 **Live demo: [qr.deityhub.com](https://qr.deityhub.com)**: generate a QR code and download it as SVG or PNG.
 
-A robust, zero-dependency, highly configurable QR code generator for TypeScript and JavaScript projects. It implements the QR Code specification (ISO/IEC 18004) with all versions (1-40), all four error correction levels and all four encoding modes. The output is verified against an independent reference encoder (see [Testing](#testing)).
+A robust, zero-dependency, highly configurable and customizable QR code generator for TypeScript and JavaScript projects. It implements the QR Code specification (ISO/IEC 18004) with all versions (1-40), all four error correction levels and all four encoding modes. The output is verified against an independent reference encoder (see [Testing](#testing)).
 
 ## Features
 
