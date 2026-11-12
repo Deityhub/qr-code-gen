@@ -1,6 +1,6 @@
 {
   "name": "@deityhub/qr-code-gen",
-  "version": "2.3.0",
+  "version": "2.4.0",
   "description": "A robust, zero-dependency, highly configurable and customizable QR Code generator for your TypeScript/JavaScript projects.",
   "type": "module",
   "main": "./dist/index.cjs",
