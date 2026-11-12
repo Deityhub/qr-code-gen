@@ -118,7 +118,7 @@ Renders a matrix as a string of block characters (`██`), useful for console 
 import { writeFileSync } from 'node:fs';
 import { generateQRCode, renderToSVG } from '@deityhub/qr-code-gen';
 
-const matrix = generateQRCode({ data: 'https://example.com', ecl: 'Q' });
+const matrix = generateQRCode({ data: 'https://judeojini.com', ecl: 'Q' });
 writeFileSync('qr.svg', renderToSVG(matrix, 512));
 ```
 
@@ -128,7 +128,7 @@ writeFileSync('qr.svg', renderToSVG(matrix, 512));
 import { writeFileSync } from 'node:fs';
 import { generateQRCode, renderToPng } from '@deityhub/qr-code-gen';
 
-const matrix = generateQRCode({ data: 'https://example.com' });
+const matrix = generateQRCode({ data: 'https://judeojini.com' });
 writeFileSync('qr.png', renderToPng(matrix, 512));
 ```
 
@@ -137,7 +137,7 @@ writeFileSync('qr.png', renderToPng(matrix, 512));
 ```typescript
 import { generateQRCode, renderToPng } from '@deityhub/qr-code-gen';
 
-const matrix = generateQRCode({ data: 'https://example.com' });
+const matrix = generateQRCode({ data: 'https://judeojini.com' });
 const blob = new Blob([renderToPng(matrix, 512)], { type: 'image/png' });
 
 const a = document.createElement('a');
