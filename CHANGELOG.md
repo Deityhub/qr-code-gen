@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.4.0](https://github.com/Deityhub/qr-code-gen/compare/qr-code-gen-v2.3.0...qr-code-gen-v2.4.0) (2026-11-12)
+
+
+### Features
+
+* add QR code customisation (colours, shapes, corner squares, logo) ([71faf0a](https://github.com/Deityhub/qr-code-gen/commit/71faf0afefac95a7ecee0862ed4a1de2e5c20754))
+* add QR code customisation (colours, shapes, corner squares, logo) ([67fa3df](https://github.com/Deityhub/qr-code-gen/commit/67fa3dfd086a4c13cb6b66b9705ae22c59630bc8))
+* customisation panel in the demo and updated docs ([23470ae](https://github.com/Deityhub/qr-code-gen/commit/23470ae98dd4e8122f42f53886ede1abe17f9045))
+* improve SEO and structured data for the demo site ([4465ca0](https://github.com/Deityhub/qr-code-gen/commit/4465ca0af1b81fe34f08506df769e4246b3b08cd))
+* new app icon, favicon set and social image ([027287a](https://github.com/Deityhub/qr-code-gen/commit/027287a86c660d026d29f6e3eeeed2deefa5d510))
+* put the QR preview first and make the demo layout responsive ([0dd793f](https://github.com/Deityhub/qr-code-gen/commit/0dd793f12075e028d385fe84e0a73bf736531670))
+* put the QR preview first and make the demo layout responsive ([c6e29ef](https://github.com/Deityhub/qr-code-gen/commit/c6e29ef68694e02173c2df67850a88439e40176c))
+
 ## [2.3.0](https://github.com/Deityhub/qr-code-gen/compare/qr-code-gen-v2.2.1...qr-code-gen-v2.3.0) (2026-10-31)
 
 
