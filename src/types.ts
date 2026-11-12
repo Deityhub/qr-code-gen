@@ -59,3 +59,22 @@ export interface QRCodeConfig {
      */
     quietZone?: number;
 }
+
+/**
+ * A generated QR code together with the details a styled renderer needs
+ * (the plain matrix has the quiet zone baked in and no record of the version).
+ */
+export interface QRSymbol {
+    /** The module grid including the quiet zone (true = dark). */
+    matrix: QRMatrix;
+    /** The version used (1-40). */
+    version: number;
+    /** The error correction level used. */
+    ecl: ErrorCorrectionLevel;
+    /** The encoding mode used. */
+    mode: EncodingMode;
+    /** Quiet zone width in modules (already included in `matrix`). */
+    quietZone: number;
+    /** Side length of the symbol without the quiet zone: `4 * version + 17`. */
+    modules: number;
+}

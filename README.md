@@ -14,6 +14,7 @@ A robust, zero-dependency, highly configurable QR code generator for TypeScript 
 - **All Encoding Modes**: Numeric, Alphanumeric, Byte (UTF-8) and Kanji, with automatic mode detection
 - **Error Correction Levels**: L (~7%), M (~15%), Q (~25%), H (~30%)
 - **Renderers**: SVG string, PNG image (`Uint8Array`) and a console (block character) renderer; the raw matrix is available for any custom renderer
+- **Customisation**: colours, gradients, dot/rounded/diamond modules, styled corner squares and a logo in the middle, with built-in scan-safety checks
 - **Zero Dependencies**: pure TypeScript
 - **Full TypeScript Support**: typed config, matrix and error classes
 - **Browser & Node.js**: ESM, CommonJS and UMD builds (Node 18+)
@@ -86,7 +87,7 @@ try {
 }
 ```
 
-`DEFAULT_CONFIG` (the defaults above) is also exported, as are the `QRCodeConfig`, `QRMatrix`, `ErrorCorrectionLevel` and `EncodingMode` types.
+`DEFAULT_CONFIG` (the defaults above) is also exported, as are the `QRCodeConfig`, `QRMatrix`, `QRSymbol`, `ErrorCorrectionLevel` and `EncodingMode` types.
 
 ### `renderToSVG(matrix, size?)`
 
@@ -97,18 +98,96 @@ Renders a matrix as an SVG string with a white background and black modules. Adj
 
 Returns the SVG markup as a `string`.
 
-### `renderToPng(matrix, size?)`
+### `renderToPng(matrix, size?, options?)`
 
 Renders a matrix as a PNG image (1-bit, black modules on white) with no dependencies. It works in the browser and in Node.js.
 
 - `matrix` (`QRMatrix`): the matrix from `generateQRCode`
 - `size?` (`number`, default `300`): requested width and height in pixels
+- `options?`: `{ foreground?, background? }`, solid colours (`'#0e7bf7'`, `rgb()`, `hsl()` or a basic name; the background may be `'transparent'`)
 
-Every module is drawn with the same whole number of pixels so the code stays sharp, so the image side is the closest multiple of `matrix.length` to `size` (never less than one pixel per module). Returns the PNG file contents as a `Uint8Array`.
+Every module is drawn with the same whole number of pixels so the code stays sharp, so the image side is the closest multiple of `matrix.length` to `size` (never less than one pixel per module). Returns the PNG file contents as a `Uint8Array`. For gradients, shapes and logos use [`renderToStyledSVG`](#customising-the-look).
 
 ### `renderToString(matrix)`
 
 Renders a matrix as a string of block characters (`██`), useful for console output. Returns a `string`.
+
+## Customising the look
+
+`generateQRSymbol` returns the matrix together with the version, level and quiet zone that were used. `renderToStyledSVG` turns it into an SVG with your colours, shapes and logo.
+
+```typescript
+import { generateQRSymbol, renderToStyledSVG } from '@deityhub/qr-code-gen';
+
+const symbol = generateQRSymbol({ data: 'https://judeojini.com', ecl: 'H' });
+
+const svg = renderToStyledSVG(symbol, {
+    size: 400,
+    foreground: { type: 'linear', angle: 45, stops: [{ offset: 0, color: '#0e7bf7' }, { offset: 1, color: '#7b2ff7' }] },
+    background: '#ffffff',
+    modules: { shape: 'rounded' },
+    eyes: { frame: { shape: 'rounded' }, ball: { shape: 'circle', color: '#7b2ff7' } },
+    logo: { href: 'data:image/png;base64,...', size: 0.2, shape: 'circle' },
+});
+```
+
+### `generateQRSymbol(config)`
+
+Takes the same config as `generateQRCode` and returns `{ matrix, version, ecl, mode, quietZone, modules }`. (`generateQRCode(config)` is `generateQRSymbol(config).matrix`.)
+
+### `renderToStyledSVG(symbol, style?)`
+
+| Option | Description |
+|--------|-------------|
+| `size` | Width and height in pixels (default `300`) |
+| `foreground` | A colour, or a gradient `{ type: 'linear' \| 'radial', angle?, stops: [{ offset, color }] }` (2-8 stops) |
+| `background` | A colour or `'transparent'` (default white) |
+| `cornerRadius` | Rounds the corners of the whole code, in modules |
+| `modules.shape` | `'square'` (default), `'rounded'`, `'dots'` or `'diamond'` |
+| `modules.scale` | Module size relative to its cell, `0.6` to `1` (default `1`) |
+| `eyes.frame` / `eyes.ball` | The three corner squares: `{ shape: 'square' \| 'rounded' \| 'circle', color? }` for the outer ring and the solid centre |
+| `logo` | `{ href, size?, margin?, shape?, background? }`, see below |
+| `strict` | Throw a `StyleError` for combinations that probably won't scan (default `true`) |
+
+Colours can be `#rgb`, `#rrggbb`, `#rrggbbaa`, `rgb()`, `hsl()` or a basic name (`black`, `white`, `red`, `green`, `blue`, ...). Anything else throws a `StyleError`, so no user input is ever copied into the SVG unchecked.
+
+### Adding a logo
+
+- `href` is a base64 `data:image/...` URI (PNG, JPEG, GIF, WebP or SVG) or an `https://` URL
+- `size` is the logo width as a fraction of the code (default `0.2`, at most `0.3`); `margin` is the number of empty modules around it (default `1`); `shape` is `'square'` or `'circle'`
+- The modules under the logo are removed, so the code needs **error correction level Q or H**
+- The hidden area is limited (about 12% of the data modules at Q and 15% at H). A larger logo throws a `StyleError`, or is reported as a warning with `strict: false`
+
+### `analyzeStyle(symbol, style?)`
+
+Checks a style without rendering and returns `{ warnings, errors, logoCoverage, contrastRatio }`. `errors` are what makes `renderToStyledSVG` throw; `warnings` cover low contrast, inverted colours, a transparent background and small modules. It is what the [demo](https://qr.deityhub.com) uses to warn you live.
+
+### PNG from a styled code
+
+- **Browser:** `renderSvgToPng(svg, size?)` returns a `Promise<Blob>`. A logo must be a `data:` URI for this.
+
+  ```typescript
+  import { generateQRSymbol, renderToStyledSVG, renderSvgToPng } from '@deityhub/qr-code-gen';
+
+  const symbol = generateQRSymbol({ data: 'https://judeojini.com', ecl: 'H' });
+  const blob = await renderSvgToPng(renderToStyledSVG(symbol, { modules: { shape: 'dots' } }), 512);
+  ```
+
+- **Node.js:** convert the SVG with a library such as [sharp](https://sharp.pixelplumbing.com/) or [resvg](https://github.com/yisibl/resvg-js); the package itself stays dependency-free.
+
+  ```typescript
+  import sharp from 'sharp';
+
+  const png = await sharp(Buffer.from(svg)).png().toBuffer();
+  ```
+
+### Keeping styled codes scannable
+
+- Keep strong contrast between the modules and the background; light-on-dark (inverted) codes are not read by every scanner
+- The alignment patterns are always drawn as solid squares, because scanners use them to find the grid
+- Shapes with gaps (`dots`, `diamond`, or a `scale` below 1) are read by most scanners but not all of them, so test the final code on the devices you care about
+- Use a high error correction level (Q or H) for logos and keep them small
+- Always scan the result before you print it
 
 ## Examples
 
@@ -215,6 +294,8 @@ Versions 1-40, from 21×21 to 177×177 modules (`4 * version + 17`), selected au
 src/
   index.ts          generateQRCode, renderToSVG, renderToString
   png.ts            renderToPng (dependency-free PNG encoder)
+  browser.ts        renderSvgToPng (browser only: SVG to PNG via canvas)
+  style/            styled SVG: colours, gradients, shapes, logo and safety checks
   config.ts         DEFAULT_CONFIG, CapacityError, EncodingError
   types.ts          public types
   constants.ts      spec tables (block structure, alignment positions, indicators)
@@ -239,10 +320,14 @@ site/               the demo site published at qr.deityhub.com
 
 - Enter any text or URL and see the QR code update as you type
 - Set every library option: error correction, encoding mode, version and quiet zone
-- Download the result as SVG or PNG at a chosen size
+- Customise the colours, gradient, module and corner shapes, and add your own logo, with live scan-safety warnings
+- Download the result as SVG or PNG at a chosen size (a plain code uses `renderToPng`, a styled one `renderSvgToPng`)
 - Run entirely in the browser; nothing is sent to a server
 
-![QR Code Generator Browser Demo](https://raw.githubusercontent.com/Deityhub/qr-code-gen/refs/heads/main/docs/demo-browser.png)
+<p align="center">
+  <img src="https://raw.githubusercontent.com/Deityhub/qr-code-gen/refs/heads/main/docs/demo-browser.png" alt="The QR code generator on desktop, with the Dots style and a circular logo" width="640">
+  <img src="https://raw.githubusercontent.com/Deityhub/qr-code-gen/refs/heads/main/docs/demo-mobile.png" alt="The QR code generator on a phone, with the preview pinned above the logo settings" width="230">
+</p>
 
 To run it locally:
 

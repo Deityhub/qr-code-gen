@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'vitest';
 import { inflateSync } from 'node:zlib';
-import { generateQRCode, renderToPng } from '../src/index';
+import { StyleError, generateQRCode, renderSvgToPng, renderToPng } from '../src/index';
 
 // Independent CRC-32 so the chunk checksums are not validated with the encoder's own code
 function crc32(bytes: Uint8Array): number {
@@ -30,19 +30,22 @@ function readPng(png: Uint8Array) {
         pos += 12 + length;
     }
     expect(pos).toBe(png.length);
-    expect(order).toEqual(['IHDR', 'IDAT', 'IEND']);
+    expect(order[0]).toBe('IHDR');
+    expect(order.slice(-2)).toEqual(['IDAT', 'IEND']);
 
     const ihdr = new DataView(chunks.IHDR.buffer, chunks.IHDR.byteOffset);
     const width = ihdr.getUint32(0);
     const height = ihdr.getUint32(4);
-    expect(Array.from(chunks.IHDR.slice(8))).toEqual([1, 0, 0, 0, 0]); // 1-bit greyscale, no interlace
+    const colorType = chunks.IHDR[9];
+    expect(Array.from(chunks.IHDR.slice(8, 9))).toEqual([1]); // 1-bit
+    expect(Array.from(chunks.IHDR.slice(10))).toEqual([0, 0, 0]); // default compression/filter, no interlace
 
     // inflateSync also verifies the zlib Adler-32
     const raw = inflateSync(chunks.IDAT);
     const rowBytes = Math.ceil(width / 8);
     expect(raw.length).toBe((rowBytes + 1) * height);
     const pixel = (x: number, y: number) => (raw[y * (rowBytes + 1) + 1 + (x >> 3)] >> (7 - (x & 7))) & 1; // 1 = white
-    return { width, height, pixel, filters: Array.from({ length: height }, (_, y) => raw[y * (rowBytes + 1)]) };
+    return { width, height, pixel, colorType, order, chunks, filters: Array.from({ length: height }, (_, y) => raw[y * (rowBytes + 1)]) };
 }
 
 describe('renderToPng', () => {
@@ -88,3 +91,40 @@ describe('renderToPng', () => {
         expect(pixel(4 * scale, 4 * scale)).toBe(0); // first finder pattern module is dark
     });
 });
+
+describe('renderToPng colours', () => {
+    const matrix = generateQRCode({ data: 'https://qr.deityhub.com' });
+
+    test('writes a 2-colour palette image with the same pixels', () => {
+        const plain = readPng(renderToPng(matrix, 200));
+        const coloured = readPng(renderToPng(matrix, 200, { foreground: '#0e7bf7', background: 'rgb(244, 248, 255)' }));
+
+        expect(plain.colorType).toBe(0);
+        expect(coloured.colorType).toBe(3);
+        expect(coloured.order).toEqual(['IHDR', 'PLTE', 'IDAT', 'IEND']);
+        expect(Array.from(coloured.chunks.PLTE)).toEqual([0x0e, 0x7b, 0xf7, 244, 248, 255]); // index 0 = foreground
+        expect(coloured.width).toBe(plain.width);
+        for (let y = 0; y < plain.height; y += 3) {
+            for (let x = 0; x < plain.width; x += 3) {
+                expect(coloured.pixel(x, y)).toBe(plain.pixel(x, y));
+            }
+        }
+    });
+
+    test('uses a transparency chunk for a transparent background', () => {
+        const png = readPng(renderToPng(matrix, 200, { background: 'transparent' }));
+        expect(png.order).toEqual(['IHDR', 'PLTE', 'tRNS', 'IDAT', 'IEND']);
+        expect(Array.from(png.chunks.tRNS)).toEqual([255, 0]);
+    });
+
+    test('rejects an unsupported colour', () => {
+        expect(() => renderToPng(matrix, 200, { foreground: 'banana' })).toThrow(StyleError);
+    });
+});
+
+describe('renderSvgToPng', () => {
+    test('is only available in a browser', async () => {
+        await expect(renderSvgToPng('<svg xmlns="http://www.w3.org/2000/svg"/>')).rejects.toThrow(/browser/);
+    });
+});
+

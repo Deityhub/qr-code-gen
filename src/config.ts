@@ -21,6 +21,16 @@ export class EncodingError extends Error {
 }
 
 /**
+ * Thrown when a style option is invalid or would make the code unreliable to scan.
+ */
+export class StyleError extends Error {
+    constructor(message: string) {
+        super(message);
+        this.name = 'StyleError';
+    }
+}
+
+/**
  * Default configuration values used when optional properties are omitted.
  */
 export const DEFAULT_CONFIG: Required<Omit<QRCodeConfig, 'data' | 'version'>> = {
