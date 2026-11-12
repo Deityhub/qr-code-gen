@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.4.0](https://github.com/Deityhub/qr-code-gen/compare/qr-code-gen-v2.3.0...qr-code-gen-v2.4.0) (2026-11-12)
+
+
+### Features
+
+* put the QR preview first and make the demo layout responsive ([0dd793f](https://github.com/Deityhub/qr-code-gen/commit/0dd793f12075e028d385fe84e0a73bf736531670))
+* put the QR preview first and make the demo layout responsive ([c6e29ef](https://github.com/Deityhub/qr-code-gen/commit/c6e29ef68694e02173c2df67850a88439e40176c))
+
 ## [2.3.0](https://github.com/Deityhub/qr-code-gen/compare/qr-code-gen-v2.2.1...qr-code-gen-v2.3.0) (2026-10-31)
 
 
