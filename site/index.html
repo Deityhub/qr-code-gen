@@ -111,11 +111,12 @@
         }
         .content {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr));
             gap: 22px;
             padding: 26px 30px 30px;
         }
         .panel {
+            min-width: 0;
             padding: 20px;
             border: 1px solid var(--border);
             border-radius: 14px;
@@ -158,7 +159,7 @@
             gap: 16px;
         }
         .grid.two {
-            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(min(200px, 100%), 1fr));
             row-gap: 14px;
         }
         .grid.two .grid {
@@ -187,7 +188,7 @@
             transform: translateY(0);
         }
         button.secondary {
-            flex: 1;
+            flex: 1 1 120px;
             padding: 10px;
             border-radius: 8px;
             border: 1px solid var(--accent);
@@ -199,14 +200,14 @@
         button.secondary:hover:not(:disabled) { background: #f4f8ff; }
         button:disabled { opacity: 0.5; cursor: not-allowed; }
         button:focus-visible { outline: 3px solid rgba(14, 123, 247, 0.5); outline-offset: 2px; }
-        .downloads { display: flex; gap: 10px; }
+        .downloads { display: flex; flex-wrap: wrap; gap: 10px; }
         .seo { padding: 0 30px 10px; }
         .seo h2 { font-size: 20px; margin: 22px 0 8px; }
         .seo p, .seo li { color: var(--muted); line-height: 1.6; }
         .seo details { border-top: 1px solid var(--border); padding: 10px 0; }
         .seo summary { cursor: pointer; font-weight: 600; color: var(--ink); }
         .message {
-            margin-top: 12px;
+            margin-top: 0;
             padding: 12px 14px;
             border-radius: 12px;
             border: 1px solid var(--border);
@@ -224,6 +225,7 @@
             color: #b42329;
         }
         .preview-card {
+            align-self: start;
             display: flex;
             flex-direction: column;
             gap: 14px;
@@ -261,9 +263,14 @@
             font-size: 14px;
         }
         @media (max-width: 720px) {
-            body { padding: 20px; }
+            body { padding: 12px; }
             h1 { font-size: 24px; }
-            .qr-output svg { max-width: 280px; }
+            .hero { padding: 20px 16px; }
+            .content { padding: 16px; gap: 16px; }
+            .panel { padding: 16px; }
+            .qr-frame { min-height: 0; padding: 12px; }
+            .seo { padding: 0 16px 10px; }
+            .footer { padding: 0 16px 20px; }
         }
     </style>
 </head>
@@ -278,10 +285,21 @@
         </header>
 
         <div class="content">
+            <div class="panel preview-card" id="previewCard">
+                <div class="message" id="message" role="status" aria-live="polite">Enter some text to generate a QR code.</div>
+                <div class="qr-frame" id="qrContainer">
+                    <div class="qr-output" id="qrOutput" role="img" aria-label="Generated QR code"></div>
+                </div>
+                <div class="downloads">
+                    <button class="secondary" type="button" id="downloadSvg" disabled>Download SVG</button>
+                    <button class="secondary" type="button" id="downloadPng" disabled>Download PNG</button>
+                </div>
+            </div>
+
             <form id="qrForm" class="panel grid">
                 <div class="grid">
                     <label for="data">Text to encode</label>
-                    <input type="text" id="data" name="data" value="https://example.com" autocomplete="off" placeholder="Enter URL, text, or payload">
+                    <input type="text" id="data" name="data" value="https://judeojini.com" autocomplete="off" placeholder="Enter URL, text, or payload">
                     <p class="hint">The preview updates as you type.</p>
                 </div>
 
@@ -324,19 +342,7 @@
                 <p class="hint">Defaults are the recommended settings. A quiet zone below 4 modules can make codes harder to scan, and the download size is rounded to a whole number of pixels per module so the code stays sharp.</p>
 
                 <button class="secondary" type="button" id="reset">Reset to defaults</button>
-                <button class="primary" type="submit" id="generateBtn">Generate QR code</button>
-                <div class="downloads">
-                    <button class="secondary" type="button" id="downloadSvg" disabled>Download SVG</button>
-                    <button class="secondary" type="button" id="downloadPng" disabled>Download PNG</button>
-                </div>
             </form>
-
-            <div class="panel preview-card" id="previewCard">
-                <div class="message" id="message" role="status" aria-live="polite">Ready when you are — enter some text and generate.</div>
-                <div class="qr-frame" id="qrContainer">
-                    <div class="qr-output" id="qrOutput" role="img" aria-label="Generated QR code"></div>
-                </div>
-            </div>
         </div>
 
         <div class="footer">
@@ -396,7 +402,10 @@
             const exportSize = (modules) => modules * Math.max(1, Math.round(clampInt('size', 128, 2048, 512) / modules));
             const previewSize = (modules) => {
                 const dpr = window.devicePixelRatio || 1;
-                const avail = Math.min(360, $('qrContainer').clientWidth - 40);
+                const frame = $('qrContainer');
+                const style = getComputedStyle(frame);
+                const inner = frame.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight);
+                const avail = Math.min(360, inner);
                 return (modules * Math.max(1, Math.floor((avail * dpr) / modules))) / dpr;
             };
 
