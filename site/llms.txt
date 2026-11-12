@@ -1,0 +1,19 @@
+# QR Code Generator
+
+> A free, private and customisable QR code generator that runs entirely in your browser. Change colours, gradients, module and corner shapes, add a logo, and download as SVG or PNG. No sign-up, no tracking, nothing is uploaded.
+
+QR Code Generator is built on the open-source, zero-dependency library @deityhub/qr-code-gen (MIT licence), written in TypeScript. The codes it makes are static: they contain your text or link directly and never expire.
+
+## Tool
+
+- [QR Code Generator](https://qr.deityhub.com/): create, customise and download QR codes as SVG or PNG
+
+## Library and documentation
+
+- [@deityhub/qr-code-gen on npm](https://www.npmjs.com/package/@deityhub/qr-code-gen): install the library
+- [Source code and README](https://github.com/Deityhub/qr-code-gen): API reference, styling options, logo and scan-safety guidance
+- [Changelog](https://github.com/Deityhub/qr-code-gen/blob/main/CHANGELOG.md): release history
+
+## Author
+
+- [Chizoba Jude Ojini](https://judeojini.com)
